@@ -44,7 +44,8 @@ class VisCallback(keras.callbacks.Callback):
         dt = time.time() - self.iter_start_time
         self.iter_start_time = time.time()
         self.dt_stats.push(dt)
-        self.loss_stats.push(logs['loss'])
+        if not np.isnan(logs['loss']):
+            self.loss_stats.push(logs['loss'])
         self.checkpoint_params.iter += 1
 
         if self.display > 0 and self.checkpoint_params.iter % self.display == 0:

@@ -5,7 +5,7 @@ import json
 import tempfile
 import sys
 
-from calamari_ocr.ocr import CrossFold
+from calamari_ocr.ocr import CrossFold, SavedModel
 from calamari_ocr.utils.multiprocessing import prefix_run_command, run
 
 # path to the dir of this script to automatically detect the training script
@@ -136,6 +136,9 @@ class CrossFoldTrainer:
                 if fold_args["weights"]:
                     if len(fold_args["weights"].strip()) == 0 or fold_args["weights"].upper() == "NONE":
                         fold_args["weights"] = None
+                    else:
+                        # access model once to upgrade the model if necessary (can not be performed in parallel)
+                        SavedModel(fold_args["weights"])
 
                 json.dump(
                     fold_args,

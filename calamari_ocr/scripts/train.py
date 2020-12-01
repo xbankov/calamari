@@ -1,5 +1,6 @@
 import argparse
 import os
+from glob import glob
 
 from calamari_ocr import __version__
 from calamari_ocr.utils import glob_all, split_all_ext, keep_files_with_same_file_name
@@ -22,6 +23,10 @@ def setup_train_args(parser, omit=None):
     parser.add_argument('--version', action='version', version='%(prog)s v' + __version__)
 
     if "files" not in omit:
+        parser.add_argument("--folders", nargs="+", default=[],
+                            help="List all folders that contains image files that shall be processed. Ground truth "
+                                 "fils with the same "
+                                 "base name but with '.gt.txt' as extension are required at the same location")
         parser.add_argument("--files", nargs="+", default=[],
                             help="List all image files that shall be processed. Ground truth fils with the same "
                                  "base name but with '.gt.txt' as extension are required at the same location")
@@ -29,7 +34,8 @@ def setup_train_args(parser, omit=None):
                             help="Optional list of GT files if they are in other directory")
         parser.add_argument("--gt_extension", default=None,
                             help="Default extension of the gt files (expected to exist in same dir)")
-        parser.add_argument("--dataset", type=DataSetType.from_string, choices=list(DataSetType), default=DataSetType.FILE)
+        parser.add_argument("--dataset", type=DataSetType.from_string, choices=list(DataSetType),
+                            default=DataSetType.FILE)
 
     parser.add_argument("--train_data_on_the_fly", action='store_true', default=False,
                         help='Instead of preloading all data during the training, load the data on the fly. '
@@ -106,7 +112,8 @@ def setup_train_args(parser, omit=None):
                             help="Optional list of validation GT files if they are in other directory")
         parser.add_argument("--validation_extension", default=None,
                             help="Default extension of the gt files (expected to exist in same dir)")
-        parser.add_argument("--validation_dataset", type=DataSetType.from_string, choices=list(DataSetType), default=DataSetType.FILE)
+        parser.add_argument("--validation_dataset", type=DataSetType.from_string, choices=list(DataSetType),
+                            default=DataSetType.FILE)
 
     parser.add_argument("--validation_data_on_the_fly", action='store_true', default=False,
                         help='Instead of preloading all data during the training, load the data on the fly. '
@@ -149,25 +156,28 @@ def setup_train_args(parser, omit=None):
     parser.add_argument("--text_normalization", type=str, default="NFC",
                         help="Unicode text normalization to apply. Defaults to NFC")
     parser.add_argument("--data_preprocessing", nargs="+", type=DataPreprocessorParams.Type.Value,
-                        choices=DataPreprocessorParams.Type.values(), default=[DataPreprocessorParams.DEFAULT_NORMALIZER])
+                        choices=DataPreprocessorParams.Type.values(),
+                        default=[DataPreprocessorParams.DEFAULT_NORMALIZER])
 
     # text/line generation params (loaded from json files)
     parser.add_argument("--text_generator_params", type=str, default=None)
     parser.add_argument("--line_generator_params", type=str, default=None)
-
 
     # additional dataset args
     parser.add_argument("--dataset_pad", default=None, nargs='+', type=int)
     parser.add_argument("--pagexml_text_index", default=0)
 
 
-
 def create_train_dataset(args, dataset_args=None):
     gt_extension = args.gt_extension if args.gt_extension is not None else DataSetType.gt_extension(args.dataset)
 
     # Training dataset
-    print("Resolving input files")
-    input_image_files = sorted(glob_all(args.files))
+    if args.folders:
+        print("Resolving input folders")
+        input_image_files = sorted([file for folder in args.folders for file in glob(folder + '/*.png')])
+    else:
+        print("Resolving input files")
+        input_image_files = sorted(glob_all(args.files))
     if not args.text_files:
         if gt_extension:
             gt_txt_files = [split_all_ext(f)[0] + gt_extension for f in input_image_files]
@@ -196,7 +206,6 @@ def create_train_dataset(args, dataset_args=None):
 
 
 def run(args):
-
     # check if loading a json file
     if len(args.files) == 1 and args.files[0].endswith("json"):
         import json
@@ -254,7 +263,8 @@ def run(args):
             val_txt_files = [split_all_ext(f)[0] + args.validation_extension for f in validation_image_files]
         else:
             val_txt_files = sorted(glob_all(args.validation_text_files))
-            validation_image_files, val_txt_files = keep_files_with_same_file_name(validation_image_files, val_txt_files)
+            validation_image_files, val_txt_files = keep_files_with_same_file_name(validation_image_files,
+                                                                                   val_txt_files)
             for img, gt in zip(validation_image_files, val_txt_files):
                 if split_all_ext(os.path.basename(img))[0] != split_all_ext(os.path.basename(gt))[0]:
                     raise Exception("Expected identical basenames of validation file: {} and {}".format(img, gt))

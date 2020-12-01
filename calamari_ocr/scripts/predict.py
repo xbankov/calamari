@@ -1,5 +1,6 @@
 import argparse
 import os
+from glob import glob
 
 from bidi.algorithm import get_base_level
 
@@ -66,7 +67,11 @@ def run(args):
     voter = voter_from_proto(voter_params)
 
     # load files
-    input_image_files = glob_all(args.files)
+    if args.folders:
+        print("Resolving input folders")
+        input_image_files = sorted([file for folder in args.folders for file in glob(folder + '/*.png')])
+    else:
+        input_image_files = glob_all(args.files)
     if args.text_files:
         args.text_files = glob_all(args.text_files)
 
@@ -151,9 +156,11 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--version', action='version', version='%(prog)s v' + __version__)
-
-    parser.add_argument("--files", nargs="+", required=True, default=[],
+    parser.add_argument("--folders", nargs="+", required=False, default=[],
+                        help="List all folders containing image files that shall be processed")
+    parser.add_argument("--files", nargs="+", required=False, default=[],
                         help="List all image files that shall be processed")
+
     parser.add_argument("--text_files", nargs="+", default=None,
                         help="Optional list of additional text files. E.g. when updating Abbyy prediction, this parameter must be used for the xml files.")
     parser.add_argument("--dataset", type=DataSetType.from_string, choices=list(DataSetType), default=DataSetType.FILE)

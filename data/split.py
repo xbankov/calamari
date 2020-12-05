@@ -25,16 +25,12 @@ def print_cmd(split):
 
 
 def main():
-    folders = [os.path.basename(file) for file in glob('dta19/*')]
+    folders = [os.path.basename(file) for file in glob('*')]
     training_set = random.sample(folders, int(len(folders) / 100 * 75))
     test_set = set(folders) - set(training_set)
     save_cmd(sorted(training_set), 'training.sh', 'train')
     save_cmd(sorted(test_set), 'predict.sh', 'predict')
     save_cmd(sorted(test_set), 'eval.sh', 'eval')
-
-    print_cmd(sorted(training_set))
-    print_cmd(sorted(test_set))
-    print_cmd(sorted(test_set))
 
 
 if __name__ == '__main__':

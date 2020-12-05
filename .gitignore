@@ -125,3 +125,4 @@ ENV/
 
 # PyCharm
 .idea/
+!/data/dta19/

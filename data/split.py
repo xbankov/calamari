@@ -14,10 +14,7 @@ def save_cmd(split, name, mode):
         elif mode == 'predict':
             f.write(f'calamari-predict --folders {" ".join(split)}')
         elif mode == 'eval':
-            f.write(f'calamari-eval --gt eval.json')
-            dict = {'gt': " ".join([f'{fold}/*.gt.txt' for fold in split])}
-            with open(Path(name).with_suffix('.json'), 'w+') as js:
-                json.dump(dict, js)
+            f.write(f'calamari-eval --folders {" ".join(split)}')
 
 
 def print_cmd(split):
@@ -25,7 +22,7 @@ def print_cmd(split):
 
 
 def main():
-    folders = [os.path.basename(file) for file in glob('*')]
+    folders = [os.path.basename(file) for file in glob('dta19/*')]
     training_set = random.sample(folders, int(len(folders) / 100 * 75))
     test_set = set(folders) - set(training_set)
     save_cmd(sorted(training_set), 'training.sh', 'train')

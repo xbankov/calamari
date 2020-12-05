@@ -1,6 +1,8 @@
 from argparse import ArgumentParser
 import os
 import json
+from glob import glob
+
 import numpy as np
 
 from google.protobuf import json_format
@@ -123,6 +125,9 @@ def main():
     parser.add_argument("--gt", nargs="+", required=True,
                         help="Ground truth files (.gt.txt extension). "
                              "Optionally, you can pass a single json file defining all parameters.")
+    parser.add_argument("--folders", nargs="+", required=True,
+                        help="Folders containing ground truth files (.gt.txt extension). "
+                             "Optionally, you can pass a single json file defining all parameters.")
     parser.add_argument("--pred", nargs="+", default=None,
                         help="Prediction files if provided. Else files with .pred.txt are expected at the same "
                              "location as the gt.")
@@ -162,8 +167,12 @@ def main():
             for key, value in json_args.items():
                 setattr(args, key, value)
 
-    print("Resolving files")
-    gt_files = sorted(glob_all(args.gt))
+    if args.folders:
+        print("Resolving folders")
+        gt_files = sorted([file for folder in args.folders for file in glob(folder + '/*.gt.txt')])
+    else:
+        print("Resolving files")
+        gt_files = sorted(glob_all(args.gt))
 
     if args.pred:
         pred_files = sorted(glob_all(args.pred))

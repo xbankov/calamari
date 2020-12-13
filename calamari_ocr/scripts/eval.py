@@ -122,10 +122,10 @@ def write_xlsx(xlsx_file, eval_datas):
 def main():
     parser = ArgumentParser()
     parser.add_argument("--dataset", type=DataSetType.from_string, choices=list(DataSetType), default=DataSetType.FILE)
-    parser.add_argument("--gt", nargs="+", required=True,
+    parser.add_argument("--gt", nargs="+", required=False,
                         help="Ground truth files (.gt.txt extension). "
                              "Optionally, you can pass a single json file defining all parameters.")
-    parser.add_argument("--folders", nargs="+", required=True,
+    parser.add_argument("--folders", nargs="+", required=False,
                         help="Folders containing ground truth files (.gt.txt extension). "
                              "Optionally, you can pass a single json file defining all parameters.")
     parser.add_argument("--pred", nargs="+", default=None,

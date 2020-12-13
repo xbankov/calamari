@@ -1,1 +1,0 @@
-calamari-predict --folders 1797-wackenroder_herzensergiessungen 1819-goerres_revolution 1828-platen_gedichte 1832-lenau_gedichte 1834-wienbarg_feldzuege 1852-alexis_ruhe01 1852-storm_gedichte 1854-candidus_christus 1877-saar_novellen 1897-poersch_gewerkschaftsbewegung

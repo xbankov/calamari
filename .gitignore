@@ -1,9 +1,6 @@
 # Calamari specific files
 # ======================
 
-# data
-*data/dta19/*
-
 # checkpoints
 *ckpt*
 checkpoint

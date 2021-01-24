@@ -1,44 +1,51 @@
-from argparse import ArgumentParser
-from glob import glob
-from pathlib import Path
+#!/usr/bin/env python3
+
 import shutil
+from pathlib import Path
+
 import cv2
 from tqdm import tqdm
 
 
+def downscale_set(old, new, scale=4):
+    new.mkdir(parents=True, exist_ok=True)
+    all_missing = []
+
+    for folder in old.iterdir():
+        missing = []
+        (new / folder.name).mkdir(parents=True, exist_ok=True)
+        for file in tqdm(folder.iterdir(), total=len(list(folder.iterdir()))):
+            new_file = new / file.parent.name / file.name
+            if file.suffix == '.png':
+                try:
+                    img = cv2.imread(str(file), cv2.IMREAD_UNCHANGED)
+                    if img is not None:
+                        width = int(img.shape[1] // scale)
+                        height = int(img.shape[0] // scale)
+                        dim = (width, height)
+                        resized = cv2.resize(img, dim, interpolation=cv2.INTER_CUBIC)
+                        cv2.imwrite(str(new_file), resized)
+
+                except cv2.error:
+                    print(f"Error with file {file}. Skipping ...")
+                    missing.append(file.with_suffix("").stem)
+                except Exception:
+                    print("Unexpected error")
+                    missing.append(file.with_suffix("").stem)
+
+            elif file.suffixes == ['.gt', '.txt'] and not file.with_suffix("").stem in missing:
+                shutil.copy(file, new_file)
+        all_missing += missing
+    print(len(all_missing))
+
 def main():
-    parser = ArgumentParser()
-    parser.add_argument("--directory", required=True,
-                        help="Directory to save new images and folders into!")
-    parser.add_argument("--folders", nargs="+", required=True,
-                        help="Folders containing images to downscale")
-    parser.add_argument("--scale_factor", help="Downscale factor: 2 for twice smaller image.", default=2)
-    args = parser.parse_args()
-
-    root = Path(args.directory)
-    print("Resolving folders")
-
-    for folder in args.folders:
-        folder_name = Path(folder).stem
-        image_files = glob(folder + '/*.png')
-        gt_files = glob(folder + '/*.txt')
-        (root / folder_name).mkdir(parents=True, exist_ok=True)
-
-        for image in tqdm(image_files, desc="Downscaling images"):
-            image_name = Path(image).name
-            new_filename = root / folder_name / image_name
-            img = cv2.imread(image, cv2.IMREAD_UNCHANGED)
-            width = int(img.shape[1] // args.scale_factor)
-            height = int(img.shape[0] // args.scale_factor)
-            dim = (width, height)
-            resized = cv2.resize(img, dim, interpolation=cv2.INTER_CUBIC)
-            cv2.imwrite(str(new_filename), resized)
-
-        for gt in tqdm(gt_files, desc="Copying ground truth .txt files"):
-            filename = Path(gt).name
-            new_file = root / folder_name / filename
-            shutil.copy(filename, new_file)  #
-
+    root = Path('/home/xbankov/manual-splits/')
+    train_root = root / 'train'
+    valid_root = root / 'valid'
+    test_root = root / 'test'
+    downscale_set(train_root, Path(str(train_root) + '_downscaled'))
+    downscale_set(valid_root, Path(str(valid_root) + '_downscaled'))
+    downscale_set(test_root, Path(str(test_root) + '_downscaled'))
 
 if __name__ == '__main__':
     main()

@@ -1,4 +1,5 @@
 import shutil
+from argparse import ArgumentParser
 from pathlib import Path
 
 import cv2
@@ -6,7 +7,8 @@ import numpy as np
 from tensorflow import keras
 from tqdm import tqdm
 
-model_path = '/home/xbankov/Fast-SRGAN/models/generator.h5'
+model_path = 'generator.h5'
+
 
 def srgan_set(lr_directory, sr_directory):
     sr_directory.mkdir(parents=True, exist_ok=True)
@@ -47,7 +49,16 @@ def srgan_set(lr_directory, sr_directory):
                 shutil.copy(file, new_file)
 
 def main():
-    root = Path('/home/xbankov/manual-splits/')
+    parser = ArgumentParser()
+    parser.add_argument("--directory", required=True, help="Directory containing folders containing .png files (e.g. "
+                                                           "train, test, valid).")
+    parser.add_argument("--output_directory", required=True,
+                        help="Name of output directory to write folders containing "
+                             ".png files and copy .txt files.")
+    parser.add_argument("--model_path", required=True, help="Path to the model.")
+
+    # Inside mounted docker image
+    root = Path('/data/manual-splits/')
     train_root = root / 'train'
     valid_root = root / 'valid'
     test_root = root / 'test'

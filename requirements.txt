@@ -9,3 +9,4 @@ h5py
 protobuf
 prettytable
 tensorflow-gpu==2.3.0
+opencv-python

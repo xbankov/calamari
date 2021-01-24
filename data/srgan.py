@@ -49,14 +49,6 @@ def srgan_set(lr_directory, sr_directory):
                 shutil.copy(file, new_file)
 
 def main():
-    parser = ArgumentParser()
-    parser.add_argument("--directory", required=True, help="Directory containing folders containing .png files (e.g. "
-                                                           "train, test, valid).")
-    parser.add_argument("--output_directory", required=True,
-                        help="Name of output directory to write folders containing "
-                             ".png files and copy .txt files.")
-    parser.add_argument("--model_path", required=True, help="Path to the model.")
-
     # Inside mounted docker image
     root = Path('/data/manual-splits/')
     train_root = root / 'train'

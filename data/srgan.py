@@ -49,7 +49,7 @@ def srgan_set(lr_directory, sr_directory):
 
 def main():
     # Inside mounted docker image
-    root = Path('/data/manual-splits/')
+    root = Path('/data/')
     train_root = root / 'train'
     valid_root = root / 'valid'
     test_root = root / 'test'

@@ -1,5 +1,4 @@
 import shutil
-from argparse import ArgumentParser
 from pathlib import Path
 
 import cv2
@@ -7,7 +6,7 @@ import numpy as np
 from tensorflow import keras
 from tqdm import tqdm
 
-model_path = 'generator.h5'
+model_path = '/data/srgan.h5'
 
 
 def srgan_set(lr_directory, sr_directory):

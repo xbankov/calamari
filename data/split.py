@@ -4,7 +4,7 @@ from pathlib import Path
 
 from tqdm import tqdm
 
-from data.cfg import DATA_ROOT, MANUAL_SPLITS
+from cfg import DATA_ROOT, MANUAL_SPLITS
 
 random.seed(42)
 

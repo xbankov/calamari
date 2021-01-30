@@ -6,7 +6,7 @@ from pathlib import Path
 import cv2
 from tqdm import tqdm
 
-from data.cfg import MANUAL_SPLITS
+from cfg import MANUAL_SPLITS
 
 
 def downscale_set(old, new, scale=4):

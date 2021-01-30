@@ -6,7 +6,7 @@ import numpy as np
 from tensorflow import keras
 from tqdm import tqdm
 
-from data.cfg import SRGAN_PATH
+from cfg import SRGAN_PATH
 
 
 def srgan_set(lr_directory, sr_directory):

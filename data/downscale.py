@@ -6,6 +6,8 @@ from pathlib import Path
 import cv2
 from tqdm import tqdm
 
+from data.cfg import MANUAL_SPLITS
+
 
 def downscale_set(old, new, scale=4):
     new.mkdir(parents=True, exist_ok=True)
@@ -39,10 +41,9 @@ def downscale_set(old, new, scale=4):
     print(len(all_missing))
 
 def main():
-    root = Path('/home/xbankov/manual-splits/')
-    train_root = root / 'train'
-    valid_root = root / 'valid'
-    test_root = root / 'test'
+    train_root = MANUAL_SPLITS / 'train'
+    valid_root = MANUAL_SPLITS / 'valid'
+    test_root = MANUAL_SPLITS / 'test'
     downscale_set(train_root, Path(str(train_root) + '_downscaled'))
     downscale_set(valid_root, Path(str(valid_root) + '_downscaled'))
     downscale_set(test_root, Path(str(test_root) + '_downscaled'))

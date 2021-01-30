@@ -6,14 +6,14 @@ import numpy as np
 from tensorflow import keras
 from tqdm import tqdm
 
-model_path = '/data/srgan.h5'
+from data.cfg import SRGAN_PATH
 
 
 def srgan_set(lr_directory, sr_directory):
     sr_directory.mkdir(parents=True, exist_ok=True)
 
     # Change model input shape to accept all size inputs
-    model = keras.models.load_model(model_path)
+    model = keras.models.load_model(SRGAN_PATH)
     inputs = keras.Input((None, None, 3))
     output = model(inputs)
     model = keras.models.Model(inputs, output)
@@ -47,15 +47,17 @@ def srgan_set(lr_directory, sr_directory):
             elif file.suffixes == ['.gt', '.txt']:
                 shutil.copy(file, new_file)
 
+
 def main():
     # Inside mounted docker image
     root = Path('/data/')
-    train_root = root / 'train'
-    valid_root = root / 'valid'
-    test_root = root / 'test'
-    srgan_set(train_root, Path(str(train_root) + '_srgan'))
-    srgan_set(valid_root, Path(str(valid_root) + '_srgan'))
-    srgan_set(test_root, Path(str(test_root) + '_srgan'))
+    train = root / 'train'
+    valid = root / 'valid'
+    test = root / 'test'
+    srgan_set(Path(str(train) + '_downscaled'), Path(str(train) + '_srgan'))
+    srgan_set(Path(str(valid) + '_downscaled'), Path(str(valid) + '_srgan'))
+    srgan_set(Path(str(test) + '_downscaled'), Path(str(test) + '_srgan'))
+
 
 if __name__ == '__main__':
     main()

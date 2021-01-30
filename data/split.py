@@ -4,15 +4,17 @@ from pathlib import Path
 
 from tqdm import tqdm
 
+from data.cfg import DATA_ROOT, MANUAL_SPLITS
+
 random.seed(42)
 
 
 
 def main():
-    root = Path('/home/xbankov/dta19/')
-    new_train = Path('/home/xbankov/manual-splits/train')
-    new_valid = Path('/home/xbankov/manual-splits/valid')
-    new_test = Path('/home/xbankov/manual-splits/test')
+    root = DATA_ROOT.parent / 'dta19'
+    new_train = MANUAL_SPLITS / 'train'
+    new_valid = MANUAL_SPLITS / 'valid'
+    new_test = MANUAL_SPLITS / 'test'
     folders = [folder for folder in root.glob('*')]
     training_set = random.sample(folders, int(len(folders) / 100 * 75))
     valid_set = random.sample(training_set, int(len(training_set) / 100 * 25))
